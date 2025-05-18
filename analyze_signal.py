@@ -1,7 +1,6 @@
+#!/usr/bin/env python3
 import csv
-import math
 import argparse
-import sys
 
 # Configurable settings
 TIMING_VARIATION_PCT = 25  # Default allowable variation in timing (percentage)
