@@ -1,4 +1,3 @@
-from time import sleep_us
 from esp32 import RMT
 from machine import Pin
 from signals import CODES
@@ -77,7 +76,7 @@ def check_codes():
 
 try:
     if check_codes():
-        print("Codes are valid")
+        print(f"Codes are valid. Ready to output to pin {OUTPUT_PIN}.")
         main_loop()
 except Exception as e:
     print(f"Error: {e}")
