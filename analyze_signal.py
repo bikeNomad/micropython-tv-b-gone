@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import csv
+import os
 import argparse
 
 # Configurable settings
@@ -564,16 +565,16 @@ def main():
         
         # Write to the output file
         with open(args.output, 'w') as f:
-            f.write("# Recognized IR packets extracted from CSV file\n")
-            f.write(
-                "# Format: List of (packet_index, start_time, protocol_name, [pulse_duration, pause_duration, ...])\n")
+            basename, _ = os.path.splitext(os.path.basename(args.csv_file))
+            f.write(f"# Recognized IR packets extracted from CSV file {args.csv_file}\n")
+            f.write("# Format: list of (basename, pulse_duration, pause_duration, ...)\n")
             f.write("# All durations in microseconds\n\n")
             f.write("recognized_packets = [\n")
 
             for packet_idx, start_time, protocol_name, durations in packet_timings:
                 f.write(
                     f"    # Packet {packet_idx} (start time: {start_time:.6f}s) - {protocol_name} protocol\n")
-                f.write(f"    {tuple(durations)},\n")
+                f.write(f"    {tuple([basename] + durations[:-1])},\n")
 
             f.write("]\n")
 

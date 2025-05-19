@@ -31,6 +31,11 @@ def shine(color: tuple):
 
 
 def send_code(code: tuple):
+    name = "unknown"
+    if type(code[0]) is str:
+        name = code[0]
+        code = code[1:]
+    print(f"Sending {name} code")
     shine(BLUE)
     # scale each pulse by SCALE_FACTOR
     scaled = [round(p / SCALE_FACTOR) for p in code]
