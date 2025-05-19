@@ -1,8 +1,8 @@
 # MicroPython TV-B-Gone clone
 ## Introduction
 This is a MicroPython implementation of the TV-B-Gone project.
-The TV-B-Gone (by Mitch Altman) is a universal remote control that can turn off most televisions.
-Unfortunately, the existing implementations (for the ATTiny microcontrollers) have very outdated code databases and don't work with many modern TVs.
+The [TV-B-Gone](https://www.tvbgone.com/) (by Mitch Altman) is a universal remote control that can turn off most televisions.
+Unfortunately, the existing open-source implementations (for the ATTiny microcontrollers) have very outdated code databases and don't work with many modern TVs.
 This project is designed to work with the ESP32 microcontroller and a recent version of MicroPython (I used v1.25.0).
 I wanted to use the ESP32 because its RMT peripheral allows for simple and well controlled modulated IR signal generation.
 ## Workflow
