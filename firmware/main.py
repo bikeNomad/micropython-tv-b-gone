@@ -70,11 +70,15 @@ def check_codes():
     max_period = RMT.PULSE_MAX * SCALE_FACTOR
     retval = True
     for i, code in enumerate(CODES):
+        name = f"{i}"
+        if type(code[0]) is str:
+            name = code[0]
+            code = code[1:]
         for pulse in code:
             max_pulse = max(pulse, max_pulse)
             if pulse > max_period:
                 print(
-                    f"code {i}: Pulse {pulse} exceeds {max_period}")
+                    f"code {name}: Pulse {pulse} exceeds {max_period}")
                 retval = False
     print(f"Max pulse: {max_pulse}, max delay = {max_period}")
     return retval
