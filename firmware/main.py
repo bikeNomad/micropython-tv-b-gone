@@ -69,13 +69,15 @@ def send_code(code: tuple):
     Args:
         code (tuple): A tuple containing the pulse durations in microseconds.
                       The first element can be a string representing the name of the code.
+    Returns:
+        int: The total duration of the code in microseconds.
     """
     name = "unknown"
     if isinstance(code[0], str):
         name = code[0]
         code = code[1:]
     print(f"Sending {name} code")
-    shine(BLUE, 200)
+    shine(BLUE, 50)
     # scale each pulse by SCALE_FACTOR
     scaled = [round(p / SCALE_FACTOR) for p in code]
     if len(scaled) % 2 == 1:
