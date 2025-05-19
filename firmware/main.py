@@ -26,17 +26,20 @@ rmt = RMT(0, pin=Pin(1), clock_div=80 * SCALE_FACTOR, idle_level=IDLE_LEVEL,
 rgb_led = NeoPixel(Pin(RGB_LED_PIN), 1)
 
 
-def send_code(code: tuple):
-    rgb_led[0] = BLUE
+def shine(color: tuple):
+    rgb_led[0] = color
     rgb_led.write()
+
+
+def send_code(code: tuple):
+    shine(BLUE)
     # scale each pulse by SCALE_FACTOR
     scaled = [round(p / SCALE_FACTOR) for p in code]
     if len(scaled) % 2 == 1:
         scaled.append(RMT.PULSE_MAX)
     rmt.write_pulses(scaled, True)
     gc.collect()
-    rgb_led[0] = BLACK
-    rgb_led.write()
+    shine(BLACK)
     return sum(scaled) * SCALE_FACTOR
 
 
@@ -60,21 +63,22 @@ def main_loop():
 # check all the numbers in CODES to ensure that none are > RMT.PULSE_MAX
 def check_codes():
     max_pulse = 0
+    max_period = RMT.PULSE_MAX * SCALE_FACTOR
     retval = True
     for i, code in enumerate(CODES):
         for pulse in code:
             max_pulse = max(pulse, max_pulse)
-            if pulse > rmt.PULSE_MAX * SCALE_FACTOR:
+            if pulse > max_period:
                 print(
-                    f"code {i}: Pulse {pulse} exceeds {RMT.PULSE_MAX * SCALE_FACTOR}")
+                    f"code {i}: Pulse {pulse} exceeds {max_period}")
                 retval = False
-    print(f"Max pulse: {max_pulse}, delay = {RMT.PULSE_MAX * SCALE_FACTOR}")
+    print(f"Max pulse: {max_pulse}, max delay = {max_period}")
     return retval
 
 try:
-    check_codes()
-    main_loop()
+    if check_codes():
+        print("Codes are valid")
+        main_loop()
 except Exception as e:
     print(f"Error: {e}")
-    rgb_led[0] = RED
-    rgb_led.write()
+    shine(RED)
