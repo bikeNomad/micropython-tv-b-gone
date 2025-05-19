@@ -10,6 +10,18 @@ I didn't want to spend lots of time editing codes, so I bought a [very cheap IR 
 I asked Google Gemini to tell me the top 10 brands of modern TVs and collected the power-toggle codes for every code given in my universal remote manual for the 10 brands, using an IR receiver module connected to my Saleae Logic 8 logic analyzer.
 Saleae's automation API and Python helped me automate the collection process.
 Then I had Cody write a Python script that could read the CSV files produced by the Saleae logic analyzer and convert them into a format that could be used by the ESP32. Along the way I also had it identify the IR protocols, and also produce hex representations of the codes for recognized protocols, to allow me to eliminate duplicate codes.
+## TV Brands Supported
+The following brands are supported:
+  - Samsung
+  - LG
+  - TCL
+  - Hisense
+  - Sony
+  - Vizio
+  - Panasonic
+  - Philips
+  - Sharp
+  - Toshiba
 ## Code structure
 The representation of each of the codes in `firmware/codes.py` is a tuple with periods in microseconds. Each code may have an optional name as a string as the first member of the tuple.
 I used the universal remote's own code numbers as the names.
