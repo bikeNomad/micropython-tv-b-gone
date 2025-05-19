@@ -13,7 +13,6 @@ RGB_LED_PIN = 48  # RGB LED pin
 BLUE = const((0, 0, 255))
 BLACK = const((0, 0, 0))
 RED = const((255, 0, 0))
-POST_DELAY = (32767, )
 SCALE_FACTOR = const(3)
 CARRIER_FREQ = const(38000)
 DUTY_CYCLE = const(25)
@@ -31,9 +30,9 @@ def send_code(code: tuple):
     rgb_led[0] = BLUE
     rgb_led.write()
     # scale each pulse by SCALE_FACTOR
-    scaled = [p // SCALE_FACTOR for p in code]
+    scaled = [round(p / SCALE_FACTOR) for p in code]
     if len(scaled) % 2 == 1:
-        scaled += POST_DELAY
+        scaled.append(RMT.PULSE_MAX)
     rmt.write_pulses(scaled, True)
     gc.collect()
     rgb_led[0] = BLACK
@@ -69,13 +68,13 @@ def check_codes():
                 print(
                     f"code {i}: Pulse {pulse} exceeds {RMT.PULSE_MAX * SCALE_FACTOR}")
                 retval = False
-    print(f"Max pulse: {max_pulse}, delay = {POST_DELAY[0] * SCALE_FACTOR}")
+    print(f"Max pulse: {max_pulse}, delay = {RMT.PULSE_MAX * SCALE_FACTOR}")
     return retval
-
 
 try:
     check_codes()
     main_loop()
-except:
+except Exception as e:
+    print(f"Error: {e}")
     rgb_led[0] = RED
     rgb_led.write()
