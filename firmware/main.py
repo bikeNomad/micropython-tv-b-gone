@@ -1,36 +1,55 @@
-import time
-import esp32
+from time import sleep_us
+from esp32 import RMT
 from machine import Pin
 from signals import CODES
 from neopixel import NeoPixel
+from micropython import const
+import gc
 
 OUTPUT_PIN = 1  # GPIO pin to send the signal, active high
-BUTTON_PIN = 0 # BOOT button, active low
-RGB_LED_PIN = 48 # RGB LED pin
+BUTTON_PIN = 0  # BOOT button, active low
+RGB_LED_PIN = 48  # RGB LED pin
+
+BLUE = const((0, 0, 255))
+BLACK = const((0, 0, 0))
+RED = const((255, 0, 0))
+POST_DELAY = (32767, )
+SCALE_FACTOR = const(3)
+CARRIER_FREQ = const(38000)
+DUTY_CYCLE = const(25)
+
+IDLE_LEVEL = const(0)
+ACTIVE_LEVEL = const(1)
 
 # 1MHz channel resolution (80MHz clock)
-rmt = esp32.RMT(0, pin=Pin(1), clock_div=80, idle_level=0)
+rmt = RMT(0, pin=Pin(1), clock_div=80 * SCALE_FACTOR, idle_level=IDLE_LEVEL,
+          tx_carrier=(CARRIER_FREQ, DUTY_CYCLE, ACTIVE_LEVEL))
+rgb_led = NeoPixel(Pin(RGB_LED_PIN), 1)
+
 
 def send_code(code: tuple):
-    rgb_led[0] = (255, 0, 0)  # Set to red
+    rgb_led[0] = BLUE
     rgb_led.write()
-    rmt.write_pulses(code, data=True)
-    rgb_led[0] = (0, 0, 0)  # Set to black
+    # scale each pulse by SCALE_FACTOR
+    scaled = [p // SCALE_FACTOR for p in code]
+    if len(scaled) % 2 == 1:
+        scaled += POST_DELAY
+    rmt.write_pulses(scaled, True)
+    gc.collect()
+    rgb_led[0] = BLACK
     rgb_led.write()
+    return sum(scaled) * SCALE_FACTOR
 
 
 def send_all_codes(codes: tuple):
+    print(f"Sending {len(codes)} codes...")
+    duration = 0
     for code in codes:
-        send_code(code)
-        time.sleep_ms(100)
+        duration += send_code(code)
+    print(f"Total duration: {duration / 1_000_000} s")
 
 
 def main_loop():
-    # Initialize the RGB LED
-    rgb_led = NeoPixel(Pin(RGB_LED_PIN), 1)
-    rgb_led[0] = (0, 255, 0)  # Set to green
-    rgb_led.write()
-
     # Initialize the button
     button = Pin(BUTTON_PIN, Pin.IN, Pin.PULL_UP)
 
@@ -38,4 +57,25 @@ def main_loop():
         if not button.value():  # Button pressed (active low)
             send_all_codes(CODES)
 
-main_loop()
+
+# check all the numbers in CODES to ensure that none are > RMT.PULSE_MAX
+def check_codes():
+    max_pulse = 0
+    retval = True
+    for i, code in enumerate(CODES):
+        for pulse in code:
+            max_pulse = max(pulse, max_pulse)
+            if pulse > rmt.PULSE_MAX * SCALE_FACTOR:
+                print(
+                    f"code {i}: Pulse {pulse} exceeds {RMT.PULSE_MAX * SCALE_FACTOR}")
+                retval = False
+    print(f"Max pulse: {max_pulse}, delay = {POST_DELAY[0] * SCALE_FACTOR}")
+    return retval
+
+
+try:
+    check_codes()
+    main_loop()
+except:
+    rgb_led[0] = RED
+    rgb_led.write()
