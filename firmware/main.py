@@ -8,14 +8,13 @@ Thanks to Mitch Altman for the TV-B-Gone idea.
 
 import sys
 import gc
-import time
 from esp32 import RMT
 from machine import Pin, deepsleep
-from neopixel import NeoPixel
 from micropython import const
 
-from codes import CODES
 from config import *
+from leds import shine
+from codes import CODES
 
 
 # Configurable constants
@@ -31,24 +30,6 @@ output_pin = Pin(OUTPUT_PIN, Pin.OUT, value=IDLE_LEVEL, drive=Pin.DRIVE_3)
 # 1MHz/SCALE_FACTOR channel resolution (80MHz clock)
 rmt = RMT(0, pin=output_pin, clock_div=80 * SCALE_FACTOR, idle_level=IDLE_LEVEL,
           tx_carrier=(CARRIER_FREQ, DUTY_CYCLE, ACTIVE_LEVEL))
-
-rgb_led = NeoPixel(Pin(RGB_LED_PIN), 1) if RGB_LED_PIN is not None else None
-
-
-def shine(color: tuple, period: int = 0):
-    """Set the RGB LED to a specified color.
-    Args:
-        color (tuple): An RGB color tuple representing the LED color to display.
-                       Each color component should be in the range 0-255.
-        period (int): Optional. The duration in milliseconds to display the color.
-    """
-    if rgb_led is not None:
-        rgb_led[0] = color
-        rgb_led.write()
-        if period > 0:
-            time.sleep_ms(period)
-            rgb_led[0] = BLACK
-            rgb_led.write()
 
 
 def send_code(code: tuple):
@@ -124,6 +105,7 @@ def prepare_for_deepsleep():
     print("Preparing for deep sleep...")
     shine(BLACK)
     deepsleep(0)  # Deep sleep indefinitely
+
 
 # Run from boot.py
 try:

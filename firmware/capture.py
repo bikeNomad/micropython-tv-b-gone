@@ -2,7 +2,7 @@
 import os
 from time import ticks_us, ticks_diff, sleep_ms
 from array import array
-from machine import Pin
+from machine import Pin, reset
 from micropython import const
 
 from config import INPUT_PIN, INPUT_ACTIVE_LEVEL, CAPTURE_DIRECTORY
@@ -148,3 +148,4 @@ def capture_all_codes():
     print(f"Files in {CAPTURE_DIRECTORY}: {existing_files}")
 
 capture_all_codes()
+reset()

@@ -30,10 +30,10 @@ When the button is pressed, the ESP32 will wake up and start sending IR codes.
 If you want to capture new codes, you can use the `firmware/capture.py` script.
 Get into the MicroPython REPL and hit Ctrl-C to interrupt the main.py script.
 Then type `import capture` and follow the instructions.
+After you have quit entering codes, the ESP32 will reset and will be ready to send the codes you entered.
 ## Code structure
 The representation of each of the codes in `firmware/codes.py` is a tuple with periods in microseconds. Each code may have an optional name as a string as the first member of the tuple.
 I used the universal remote's own code numbers as the names.
-This should make it easy to collect your own codes (see Peter Hinch's [MicroPython IR library](https://github.com/peterhinch/micropython_ir/tree/master)
 ## Configuration
 See `firmware/config.py` for the configuration options.
 ### Circuit-related configuration
