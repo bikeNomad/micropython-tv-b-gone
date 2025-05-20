@@ -41,8 +41,7 @@ See [`firmware/config.py`](firmware/config.py) for the configuration options.
   - `ACTIVE_LEVEL` is the level that the output pin will be set to when the IR LED is active. For an output circuit that uses an NPN or NMOS transistor, this should usually be 1 (high).
   - `BUTTON_PIN` is the GPIO pin used for the button. I used the GPIO that is connected to the `BOOT` button on my development board. This pin should be one of the GPIO pins that is connected to the RTC and can be used for deep sleep wakeup.
   - `BUTTON_ACTIVE_LEVEL` is the level that the button pin will be set to when the button is pressed. I used 0 (low) for my circuit, but some circuits may require a high level.
-  - `BUTTON_PULL` is the pull-up or pull-down setting (if any) to use for the button pin.
-  I used `None` for my circuit because there is a resistor pull-up on the button on my board, but some circuits may require a different pull-up or pull-down resistor. If you don't need to pull this pin, use `None`.
+  - `BUTTON_PULL` is the pull-up or pull-down setting (if any) to use for the button pin. This can be `None`, `Pin.PULL_UP`, or `Pin.PULL_DOWN`.
   - `RGB_LED_PIN` is the GPIO pin used for the RGB LED. I used GPIO 48, because it was connected to the onboard RGB LED on my development board. If you don't have an RGB LED, you can set this to `None` to disable the RGB LED.
   - `USER_LED_PIN` is the GPIO pin used for the monochrome LED. If you don't have a monochrome LED, you can set this to `None` to disable the monochrome LED.
   - `USER_LED_ACTIVE_LEVEL` is the level that the monochrome LED pin should be set to to turn the LED is on.

@@ -1,4 +1,5 @@
 import sys
+from machine import Pin
 
 # Configurable constants
 # RMT output pin configuration
@@ -36,10 +37,11 @@ USE_XIAO_ESP32C6 = True
 try:
     if USE_XIAO_ESP32C6 and 'ESP32C6' in sys.implementation._machine:
         print("Configuring for XIAO ESP32-C6")
-        from xiao_esp32c6 import PIN_D0, PIN_D1, PIN_BOOT, PIN_USER_LED
+        from xiao_esp32c6 import PIN_D0, PIN_D1, PIN_D2, PIN_USER_LED
         OUTPUT_PIN = PIN_D0
         INPUT_PIN = PIN_D1
-        BUTTON_PIN = PIN_BOOT
+        BUTTON_PIN = PIN_D2
+        BUTTON_PULL = Pin.PULL_UP
         RGB_LED_PIN = None
         USER_LED_PIN = PIN_USER_LED
 except Exception as e:

@@ -22,7 +22,7 @@ SCALE_FACTOR = const(3)  # Scale factor for pulse durations
 CARRIER_FREQ = const(38_000)  # Carrier frequency in Hz
 DUTY_CYCLE = const(25)  # Duty cycle as a percentage. 10 to 50% is typical.
 
-IDLE_LEVEL = ACTIVE_LEVEL ^ 1  # Inverted active level
+IDLE_LEVEL = int(not ACTIVE_LEVEL) # Inverted active level
 
 
 output_pin = Pin(OUTPUT_PIN, Pin.OUT, value=IDLE_LEVEL, drive=Pin.DRIVE_3)
@@ -31,6 +31,23 @@ output_pin = Pin(OUTPUT_PIN, Pin.OUT, value=IDLE_LEVEL, drive=Pin.DRIVE_3)
 rmt = RMT(0, pin=output_pin, clock_div=80 * SCALE_FACTOR, idle_level=IDLE_LEVEL,
           tx_carrier=(CARRIER_FREQ, DUTY_CYCLE, ACTIVE_LEVEL))
 
+
+def load_captured_codes():
+    """Load every captured code from CAPTURE_DIRECTORY and add to CODES"""
+    try:
+        filenames = os.listdir(CAPTURE_DIRECTORY)
+        for filename in filenames:
+            print(f"Loading {filename}")
+            with open(f"{CAPTURE_DIRECTORY}/{filename}", "r") as f:
+                code_text = f.read()
+            code = eval(code_text)
+            CODES.append(code)
+    except OSError:
+        return False
+    except Exception as e:
+        print(f"Error loading captured codes: {e}")
+        return False
+    return True
 
 def send_code(code: tuple):
     """Send a single sequence of pulses to the RMT peripheral.

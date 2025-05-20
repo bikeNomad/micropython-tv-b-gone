@@ -96,8 +96,9 @@ def capture_ir_code(filename, name="captured"):
     # Save the captured code to a file
     try:
         with open(filename, 'w') as f:
-            f.write(f"# {name}\ncode = ")
+            f.write(f"# {name}\n")
             f.write(str(tuple(codes)))
+            f.write("\n")
             print(f"Captured code saved to {filename}")
     except OSError as e:
         print(f"Error writing to file: {e}")
