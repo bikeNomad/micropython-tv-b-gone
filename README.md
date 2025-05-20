@@ -35,20 +35,26 @@ After you have quit entering codes, the ESP32 will reset and will be ready to se
 The representation of each of the codes in `firmware/codes.py` is a tuple with periods in microseconds. Each code may have an optional name as a string as the first member of the tuple.
 I used the universal remote's own code numbers as the names.
 ## Configuration
-See `firmware/config.py` for the configuration options.
+See [`firmware/config.py`](firmware/config.py) for the configuration options.
 ### Circuit-related configuration
   - `OUTPUT_PIN` is the GPIO pin used for the IR LED.
   - `ACTIVE_LEVEL` is the level that the output pin will be set to when the IR LED is active. For an output circuit that uses an NPN or NMOS transistor, this should usually be 1 (high).
-  - `BUTTON_PIN` is the GPIO pin used for the button. I used GPIO 0, because it was connected to the `BOOT` button on my development board. This pin should be one of the GPIO pins that is connected to the RTC and can be used for deep sleep wakeup.
+  - `BUTTON_PIN` is the GPIO pin used for the button. I used the GPIO that is connected to the `BOOT` button on my development board. This pin should be one of the GPIO pins that is connected to the RTC and can be used for deep sleep wakeup.
   - `BUTTON_ACTIVE_LEVEL` is the level that the button pin will be set to when the button is pressed. I used 0 (low) for my circuit, but some circuits may require a high level.
   - `BUTTON_PULL` is the pull-up or pull-down setting (if any) to use for the button pin.
   I used `None` for my circuit because there is a resistor pull-up on the button on my board, but some circuits may require a different pull-up or pull-down resistor. If you don't need to pull this pin, use `None`.
   - `RGB_LED_PIN` is the GPIO pin used for the RGB LED. I used GPIO 48, because it was connected to the onboard RGB LED on my development board. If you don't have an RGB LED, you can set this to `None` to disable the RGB LED.
+  - `USER_LED_PIN` is the GPIO pin used for the monochrome LED. If you don't have a monochrome LED, you can set this to `None` to disable the monochrome LED.
+  - `USER_LED_ACTIVE_LEVEL` is the level that the monochrome LED pin should be set to to turn the LED is on.
   - `DUTY_CYCLE` is the duty cycle to use for the IR LED.
   This is the percentage of time that the IR LED will be on during the 38kHz pulses.
   I used 25% for my circuit, but numbers from 10% to 50% should work. 25% is a good starting point.
   - `INPUT_PIN` is the (optional) GPIO pin used for the IR receiver module. I used GPIO 4, but you can use any GPIO pin that is not used for other purposes.
-You could also edit the RGB LED colors in `firmware/config.py` if you want different colors.
+  - `INPUT_ACTIVE_LEVEL` is the level that the input pin will be set to when the IR receiver is receiving a signal. This is usually 0.
+  - `USE_XAIO_ESP32C6` is a boolean that determines whether to use the XIAO ESP32-C6 board as the default for ESP32-C6 builds.
+  If you have a different ESP32-C6 board, you should set this to `False`.
+  
+You can also edit the RGB LED colors in `firmware/config.py` if you want different colors.
 ## Transmitter Circuit Design
 You will need a 940nm IR LED and a simple one-transistor driver circuit to drive the LED.
 See Peter Hinch's explanation [here](https://github.com/peterhinch/micropython_ir/blob/master/TRANSMITTER.md).
@@ -65,28 +71,30 @@ Vled is the forward voltage drop of the IR LED (typically around 1.2-1.5V),
 Vsat is the saturation voltage of the transistor (typically around 0.2V for an NPN), and Iled is the desired current through the IR LED.
 If you're using a MOSFET, Vsat would be Iled*Rds(on), where Rds(on) is the on-resistance of the MOSFET.
 I used a high-power IR LED with a maximum pulse current rating of 200mA (TSAL6200), so I used a 22 ohm resistor to produce 100mA current pulses at 3.6V.
+
 ![Image](images/ir_output.png)
 ## Receiver Circuit Design
 You will need an IR receiver module.
 I used a 38kHz TSOP38238 IR receiver module, which is a common and cheap module.
 Connect its power supply to +3.3V and its ground to GND.
 Connect its output pin to the `INPUT_PIN` GPIO on your ESP32.
+
 ![Image](images/ir_input.png)
 ## Files in this repository
-  - `analyze_signal.py`: Analyzes a recorded IR signal and prints the results (mostly written by the Cody AI).
-  - `capture_saleae.py`: Captures IR signals using Saleae Logic 2 and saves the data to a CSV file.
-  - `firmware/config.py`: Configuration file for the firmware.
-  - `firmware/codes.py`: IR codes for the ESP32.
-  - `firmware/main.py`: Main firmware file.
-  - `firmware/capture.py`: Captures IR codes using the ESP32 and saves them to a Python file.
-  - `firmware/leds.py`: RGB and monochrome LED control code.
-  - `firmware/xiao_esp32c6.py`: Seeed Studio XIAO ESP32-C6 board support.
+  - [`analyze_signal.py`](analyze_signal.py): Analyzes a recorded IR signal and prints the results (mostly written by the Cody AI).
+  - [`capture_saleae.py`](capture_saleae.py): Captures IR signals using Saleae Logic 2 and saves the data to a CSV file.
+  - [`prompt_captures.py`](prompt_captures.py): A script to capture IR codes using the Saleae and save them to CSV files.
+  - [`firmware/config.py`](firmware/config.py): Configuration file for the firmware.
+  - [`firmware/codes.py`](firmware/codes.py): IR codes for the ESP32.
+  - [`firmware/main.py`](firmware/main.py): Main firmware file.
+  - [`firmware/capture.py`](firmware/capture.py): Captures IR codes using the ESP32 and saves them to a Python file.
+  - [`firmware/leds.py`](firmware/leds.py): RGB and monochrome LED control code.
+  - [`firmware/xiao_esp32c6.py`](firmware/xiao_esp32c6.py): Seeed Studio XIAO ESP32-C6 board support.
   - `good/`: CSV files of good (non-duplicated) IR codes captured using the Saleae Logic.
   - `good_py/`: Good IR codes captured using the Saleae Logic, converted to Python format.
-  - `prompt_captures.py`: A script to capture IR codes using the Saleae and save them to CSV files.
   - `README.md`: This file.
-  - `docs/irmp_protocols.csv`: A CSV file with details of IR protocols supported by the IRMP library.
-  - `/hardware`: Hardware design files.
+  - [`docs/irmp_protocols.csv`](docs/irmp_protocols.csv): A CSV file with details of IR protocols supported by the IRMP library.
+  - [`hardware/`](hardware/): Hardware design files.
 ## External references
   - [TV-B-Gone](https://www.tvbgone.com/)
   - [MicroPython IR library](https://github.com/peterhinch/micropython_ir/)
