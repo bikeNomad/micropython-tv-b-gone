@@ -53,9 +53,9 @@ You could also edit the RGB LED colors in `firmware/config.py` if you want diffe
 You will need a 940nm IR LED and a simple one-transistor driver circuit to drive the LED.
 See Peter Hinch's explanation [here](https://github.com/peterhinch/micropython_ir/blob/master/TRANSMITTER.md).
 Although Peter's examples show an NPN BJT transistor, 
-I used a VN2225 N-channel MOSFET transistor because that's what I had on hand, but any logic-level N-channel MOSFET should work.
+I used a BS170 N-channel MOSFET transistor because that's what I had on hand, but any logic-level N-channel MOSFET should work.
 The IR LED's cathode is connected to the drain of the transistor,
-and its anode is connected in series with a current limiting resistor whose other end is connected to your highest-voltage power rail (I used +5V on the dev board).
+and its anode is connected in series with a current limiting resistor whose other end is connected to your highest-voltage power rail (I used +5V on the dev board, and VBAT on the portable device).
 The MOSFET's source is connected to ground, and its gate is connected to the GPIO pin used for the IR LED.
 Note that if you are using a battery, the voltage will probably be lower than 5V, so you may need to adjust the resistor value accordingly.
 Also the IR output will be reduced as the battery voltage drops if you use a simple one-transistor circuit with no provisions for constant-current output.
@@ -64,12 +64,14 @@ Figure the resistor value using Ohm's law: R = (Vsupply - Vled - Vsat) / Iled.
 Vled is the forward voltage drop of the IR LED (typically around 1.2-1.5V),
 Vsat is the saturation voltage of the transistor (typically around 0.2V for an NPN), and Iled is the desired current through the IR LED.
 If you're using a MOSFET, Vsat would be Iled*Rds(on), where Rds(on) is the on-resistance of the MOSFET.
-I used a high-power IR LED with a maximum pulse current rating of 1A (SFH4248Z), so I used a 33 ohm resistor to produce 100mA current pulses.
+I used a high-power IR LED with a maximum pulse current rating of 200mA (TSAL6200), so I used a 22 ohm resistor to produce 100mA current pulses at 3.6V.
+![Image](images/ir_output.png)
 ## Receiver Circuit Design
 You will need an IR receiver module.
-I used a 38kHz 1838-type (TL1838?) IR receiver module, which is a common and cheap module.
+I used a 38kHz TSOP38238 IR receiver module, which is a common and cheap module.
 Connect its power supply to +3.3V and its ground to GND.
 Connect its output pin to the `INPUT_PIN` GPIO on your ESP32.
+![Image](images/ir_input.png)
 ## Files in this repository
   - `analyze_signal.py`: Analyzes a recorded IR signal and prints the results (mostly written by the Cody AI).
   - `capture_saleae.py`: Captures IR signals using Saleae Logic 2 and saves the data to a CSV file.
@@ -77,11 +79,14 @@ Connect its output pin to the `INPUT_PIN` GPIO on your ESP32.
   - `firmware/codes.py`: IR codes for the ESP32.
   - `firmware/main.py`: Main firmware file.
   - `firmware/capture.py`: Captures IR codes using the ESP32 and saves them to a Python file.
+  - `firmware/leds.py`: RGB and monochrome LED control code.
+  - `firmware/xiao_esp32c6.py`: Seeed Studio XIAO ESP32-C6 board support.
   - `good/`: CSV files of good (non-duplicated) IR codes captured using the Saleae Logic.
   - `good_py/`: Good IR codes captured using the Saleae Logic, converted to Python format.
   - `prompt_captures.py`: A script to capture IR codes using the Saleae and save them to CSV files.
   - `README.md`: This file.
   - `docs/irmp_protocols.csv`: A CSV file with details of IR protocols supported by the IRMP library.
+  - `/hardware`: Hardware design files.
 ## External references
   - [TV-B-Gone](https://www.tvbgone.com/)
   - [MicroPython IR library](https://github.com/peterhinch/micropython_ir/)
