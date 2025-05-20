@@ -1,7 +1,7 @@
 """
 ESP32 MicroPython TV-B-Gone firmware.
 Author: Ned Konz (ned@nedkonz.com)
-19 May 2025
+20 May 2025
 License: Public Domain
 Thanks to Mitch Altman for the TV-B-Gone idea.
 """
@@ -10,39 +10,26 @@ import sys
 import gc
 import time
 from esp32 import RMT
-from machine import Pin
-from codes import CODES
+from machine import Pin, deepsleep
 from neopixel import NeoPixel
 from micropython import const
 
+from codes import CODES
+from config import *
+
 
 # Configurable constants
-# RMT output pin configuration
-OUTPUT_PIN = const(1)  # GPIO pin to send the signal, active high
-IDLE_LEVEL = const(0)
-ACTIVE_LEVEL = const(1)
-
-# Button configuration
-BUTTON_PIN = const(0)  # BOOT button, active low
-BUTTON_ACTIVE_LEVEL = const(0)  # Active low (0V)
-BUTTON_PULL = Pin.PULL_UP
-
-# optional RGB LED configuration
-RGB_LED_PIN = const(48)  # RGB LED pin (optional, None to disable)
-
-# RGB LED colors
-BLACK = const((0, 0, 0))
-BLUE = const((0, 0, 255))
-RED = const((255, 0, 0))
-GREEN = const((0, 255, 0))
-
 SCALE_FACTOR = const(3)  # Scale factor for pulse durations
-CARRIER_FREQ = const(38000)  # Carrier frequency in Hz
+CARRIER_FREQ = const(38_000)  # Carrier frequency in Hz
 DUTY_CYCLE = const(25)  # Duty cycle as a percentage. 10 to 50% is typical.
 
+IDLE_LEVEL = ACTIVE_LEVEL ^ 1  # Inverted active level
 
-# 1MHz channel resolution (80MHz clock)
-rmt = RMT(0, pin=Pin(1), clock_div=80 * SCALE_FACTOR, idle_level=IDLE_LEVEL,
+
+output_pin = Pin(OUTPUT_PIN, Pin.OUT, value=IDLE_LEVEL, drive=Pin.DRIVE_3)
+
+# 1MHz/SCALE_FACTOR channel resolution (80MHz clock)
+rmt = RMT(0, pin=output_pin, clock_div=80 * SCALE_FACTOR, idle_level=IDLE_LEVEL,
           tx_carrier=(CARRIER_FREQ, DUTY_CYCLE, ACTIVE_LEVEL))
 
 rgb_led = NeoPixel(Pin(RGB_LED_PIN), 1) if RGB_LED_PIN is not None else None
@@ -131,6 +118,12 @@ def check_codes():
     print(f"Max pulse: {max_pulse}, max delay = {max_period}")
     return retval
 
+
+def prepare_for_deepsleep():
+    """Prepare the system for deep sleep."""
+    print("Preparing for deep sleep...")
+    shine(BLACK)
+    deepsleep(0)  # Deep sleep indefinitely
 
 # Run from boot.py
 try:
