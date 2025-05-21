@@ -43,6 +43,7 @@ See [`firmware/config.py`](firmware/config.py) for the configuration options.
   - `BUTTON_ACTIVE_LEVEL` is the level that the button pin will be set to when the button is pressed. I used 0 (low) for my circuit, but some circuits may require a high level.
   - `BUTTON_PULL` is the pull-up or pull-down setting (if any) to use for the button pin. This can be `None`, `Pin.PULL_UP`, or `Pin.PULL_DOWN`.
   - `RGB_LED_PIN` is the GPIO pin used for the RGB LED. I used GPIO 48, because it was connected to the onboard RGB LED on my development board. If you don't have an RGB LED, you can set this to `None` to disable the RGB LED.
+  - `RGB_LED_POWER_PIN` is the GPIO pin used to power the RGB LED, if any. This is used on the TinyS3. Use `None` if you don't have such a power pin.
   - `USER_LED_PIN` is the GPIO pin used for the monochrome LED. If you don't have a monochrome LED, you can set this to `None` to disable the monochrome LED.
   - `USER_LED_ACTIVE_LEVEL` is the level that the monochrome LED pin should be set to to turn the LED is on.
   - `DUTY_CYCLE` is the duty cycle to use for the IR LED.
@@ -69,7 +70,7 @@ Also the IR output will be reduced as the battery voltage drops if you use a sim
 The value of the current limiting resistor depends on the power supply voltage and the IR LED's maximum pulse current rating.
 Figure the resistor value using Ohm's law: R = (Vsupply - Vled - Vsat) / Iled.
 Vled is the forward voltage drop of the IR LED (typically around 1.2-1.5V),
-Vsat is the saturation voltage of the transistor (typically around 0.2V for an NPN), and Iled is the desired current through the IR LED.
+Vsat is the saturation voltage of the transistor (typically around 0.1V for an NPN), and Iled is the desired current through the IR LED.
 If you're using a MOSFET, Vsat would be Iled*Rds(on), where Rds(on) is the on-resistance of the MOSFET.
 I used a high-power IR LED with a maximum pulse current rating of 200mA (TSAL6200), so I used a 22 ohm resistor to produce 100mA current pulses at 3.6V.
 
