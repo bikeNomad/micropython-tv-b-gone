@@ -108,3 +108,7 @@ Connect its output pin to the `INPUT_PIN` GPIO on your ESP32.
   - [IRMP project](https://github.com/IRMP-org/IRMP)
   - [Ken Shirrif's Arduino TV-B-Gone](https://github.com/shirriff/Arduino-TV-B-Gone)
   - [Adafruit's TV-B-Gone kit](https://github.com/adafruit/TV-B-Gone-kit)
+## Pictures of my device
+![Insides](images/IMG_3873.jpeg)
+![Image](images/IMG_3874.jpeg)
+![image](images/IMG_3875.jpeg)
