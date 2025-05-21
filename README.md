@@ -5,6 +5,10 @@ The [TV-B-Gone](https://www.tvbgone.com/) (by Mitch Altman) is a universal remot
 Unfortunately, the existing open-source implementations (for the ATTiny microcontrollers) have very outdated code databases and don't work with many modern TVs.
 This project is designed to work with the ESP32 microcontroller and a recent version of MicroPython (I used v1.25.0).
 I wanted to use the ESP32 because its RMT peripheral allows for simple and well controlled modulated IR signal generation.
+## Testing status
+Currently this code has been tested and works fine with ESP32-S3 boards.
+I am currently using an Unexpected Maker TinyS3.
+I started with a XIAO ESP32-C6 board, but found that the `deepsleep()` had issues.
 ## Development Workflow
 I didn't want to spend lots of time editing codes, so I bought a [very cheap IR universal remote control from Amazon](https://www.amazon.com/dp/B0D6GFNFJY).
 I asked Google Gemini to tell me the top 10 brands of modern TVs and collected the power-toggle codes for every code given in my universal remote manual for the 10 brands, using an IR receiver module connected to my Saleae Logic 8 logic analyzer.
@@ -92,6 +96,7 @@ Connect its output pin to the `INPUT_PIN` GPIO on your ESP32.
   - [`firmware/capture.py`](firmware/capture.py): Captures IR codes using the ESP32 and saves them to a Python file.
   - [`firmware/leds.py`](firmware/leds.py): RGB and monochrome LED control code.
   - [`firmware/xiao_esp32c6.py`](firmware/xiao_esp32c6.py): Seeed Studio XIAO ESP32-C6 board support.
+  - [`firmware/code_compare.py`](firmware/code_compare.py): Compares all the IR codes and prints similar pairs.
   - `good/`: CSV files of good (non-duplicated) IR codes captured using the Saleae Logic.
   - `good_py/`: Good IR codes captured using the Saleae Logic, converted to Python format.
   - `README.md`: This file.

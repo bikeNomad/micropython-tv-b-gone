@@ -6,7 +6,7 @@ from time import sleep_ms
 from neopixel import NeoPixel
 from machine import Pin
 
-from config import RGB_LED_PIN, USER_LED_PIN, USER_LED_ACTIVE_LEVEL, BLACK
+from config import RGB_LED_PIN, USER_LED_PIN, USER_LED_ACTIVE_LEVEL, BLACK, RGB_LED_POWER_PIN
 
 rgb_pwr = Pin(RGB_LED_POWER_PIN, Pin.OUT,
               value=1) if RGB_LED_POWER_PIN is not None else None
