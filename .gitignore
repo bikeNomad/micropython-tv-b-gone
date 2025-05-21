@@ -1,3 +1,4 @@
 captures/
 hardware/tvbgone-backups/
 ~*kicad_sch.lck
+__pycache__/
