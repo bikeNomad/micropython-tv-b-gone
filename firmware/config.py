@@ -30,6 +30,7 @@ CAPTURE_DIRECTORY = "/captured"
 # optional input pin configuration for capturing IR signals
 INPUT_PIN = None  # GPIO pin for input (optional, None to disable)
 INPUT_ACTIVE_LEVEL = 0  # Active low (0V)
+INPUT_POWER_PIN = None  # GPIO pin to power the IR receiver (optional, None to disable)
 
 # Change USE_XIAO_ESP32C6 to False if you have an ESP32-C6 that is not a XIAO ESP32-C6
 USE_XIAO_ESP32C6 = True
@@ -37,10 +38,11 @@ USE_XIAO_ESP32C6 = True
 try:
     if USE_XIAO_ESP32C6 and 'ESP32C6' in sys.implementation._machine:
         print("Configuring for XIAO ESP32-C6")
-        from xiao_esp32c6 import PIN_D0, PIN_D1, PIN_D2, PIN_USER_LED
+        from xiao_esp32c6 import PIN_D0, PIN_D1, PIN_D2, PIN_USER_LED, PIN_D3
         OUTPUT_PIN = PIN_D0
         INPUT_PIN = PIN_D1
         BUTTON_PIN = PIN_D2
+        INPUT_POWER_PIN = PIN_D3
         BUTTON_PULL = Pin.PULL_UP
         RGB_LED_PIN = None
         USER_LED_PIN = PIN_USER_LED

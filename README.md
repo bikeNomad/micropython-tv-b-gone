@@ -5,7 +5,7 @@ The [TV-B-Gone](https://www.tvbgone.com/) (by Mitch Altman) is a universal remot
 Unfortunately, the existing open-source implementations (for the ATTiny microcontrollers) have very outdated code databases and don't work with many modern TVs.
 This project is designed to work with the ESP32 microcontroller and a recent version of MicroPython (I used v1.25.0).
 I wanted to use the ESP32 because its RMT peripheral allows for simple and well controlled modulated IR signal generation.
-## Workflow
+## Development Workflow
 I didn't want to spend lots of time editing codes, so I bought a [very cheap IR universal remote control from Amazon](https://www.amazon.com/dp/B0D6GFNFJY).
 I asked Google Gemini to tell me the top 10 brands of modern TVs and collected the power-toggle codes for every code given in my universal remote manual for the 10 brands, using an IR receiver module connected to my Saleae Logic 8 logic analyzer.
 Saleae's automation API and Python helped me automate the collection process.
@@ -24,16 +24,16 @@ The following brands are supported:
   - Toshiba
 ## Installation and usage
 Copy all the files from the `firmware` directory to your ESP32's root directory.
-After a reset, the ESP32 will run the code in `firmware/main.py` and will go into deep sleep until the button is pressed.
+After a reset, the ESP32 will send all the codes and will go into deep sleep until the button is pressed.
 When the button is pressed, the ESP32 will wake up and start sending IR codes.
 ## Capturing new codes
-If you want to capture new codes, you can use the `firmware/capture.py` script.
-Get into the MicroPython REPL and hit Ctrl-C to interrupt the main.py script.
-Then type `import capture` and follow the instructions.
-After you have quit entering codes, the ESP32 will reset and will be ready to send the codes you entered.
+If you want to capture new codes, get into the MicroPython REPL and hit Ctrl-C in the 3 seconds after the codes are sent.
+After you have quit capturing codes, the ESP32 will will be ready to send the codes you entered
+the next time you push the button.
 ## Code structure
 The representation of each of the codes in `firmware/codes.py` is a tuple with periods in microseconds. Each code may have an optional name as a string as the first member of the tuple.
 I used the universal remote's own code numbers as the names.
+This is the same representation as the captured codes in the `captured` directory.
 ## Configuration
 See [`firmware/config.py`](firmware/config.py) for the configuration options.
 ### Circuit-related configuration
@@ -50,6 +50,8 @@ See [`firmware/config.py`](firmware/config.py) for the configuration options.
   I used 25% for my circuit, but numbers from 10% to 50% should work. 25% is a good starting point.
   - `INPUT_PIN` is the (optional) GPIO pin used for the IR receiver module. I used GPIO 4, but you can use any GPIO pin that is not used for other purposes.
   - `INPUT_ACTIVE_LEVEL` is the level that the input pin will be set to when the IR receiver is receiving a signal. This is usually 0.
+  - `INPUT_POWER_PIN` is the (optional) GPIO pin used to power the IR receiver module (instead of just connecting it to 3.3V).
+  `None` means the IR receiver is not used or is powered from 3.3V.
   - `USE_XAIO_ESP32C6` is a boolean that determines whether to use the XIAO ESP32-C6 board as the default for ESP32-C6 builds.
   If you have a different ESP32-C6 board, you should set this to `False`.
   
@@ -75,7 +77,7 @@ I used a high-power IR LED with a maximum pulse current rating of 200mA (TSAL620
 ## Receiver Circuit Design
 You will need an IR receiver module.
 I used a 38kHz TSOP38238 IR receiver module, which is a common and cheap module.
-Connect its power supply to +3.3V and its ground to GND.
+Connect its power supply to +3.3V (or to `INPUT_POWER_PIN` if you are using one) and its ground to GND.
 Connect its output pin to the `INPUT_PIN` GPIO on your ESP32.
 
 ![Image](images/ir_input.png)

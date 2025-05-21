@@ -10,7 +10,20 @@ from config import RGB_LED_PIN, USER_LED_PIN, USER_LED_ACTIVE_LEVEL, BLACK
 
 rgb_led = NeoPixel(Pin(RGB_LED_PIN), 1) if RGB_LED_PIN is not None else None
 user_led = Pin(USER_LED_PIN, Pin.OUT,
-               level=not USER_LED_ACTIVE_LEVEL) if USER_LED_PIN is not None else None
+               value=not USER_LED_ACTIVE_LEVEL, hold=False) if USER_LED_PIN is not None else None
+
+
+def sleep_leds():
+    """
+    Prepare the system for deep sleep.
+    Turns off the RGB LED and the USER LED.
+    """
+    if rgb_led is not None:
+        rgb_led[0] = BLACK
+        rgb_led.write()
+
+    if user_led is not None:
+        user_led.init(mode=Pin.OUT, value=not USER_LED_ACTIVE_LEVEL, hold=True)
 
 
 def shine(color: tuple, period: int = 0):

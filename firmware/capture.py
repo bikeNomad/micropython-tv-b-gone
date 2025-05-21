@@ -2,36 +2,41 @@
 import os
 from time import ticks_us, ticks_diff, sleep_ms
 from array import array
-from machine import Pin, reset
+from machine import Pin
+import micropython
 from micropython import const
 
-from config import INPUT_PIN, INPUT_ACTIVE_LEVEL, CAPTURE_DIRECTORY
+from config import INPUT_PIN, INPUT_ACTIVE_LEVEL, CAPTURE_DIRECTORY, INPUT_POWER_PIN
 
-MAX_GAP_US = const(100_000_000)  # 100ms gap to end capture
+MAX_GAP_US = const(100_000)  # 100ms gap to end capture
 MAX_EDGES = const(100)  # Maximum number of edges to capture
 MIN_EDGES = const(4)
 
-input_pin = Pin(INPUT_PIN, Pin.IN)
+input_pin = Pin(INPUT_PIN, Pin.IN, hold=False)
 times = None
 edge = 0  # Current edge number, index into times
 last_time = 0   # Last edge time
 done = False  # Flag to indicate if capture is done
 
 
+@micropython.native
 def _pin_callback(_):
     """Callback function to handle pin state changes."""
     global edge, last_time, done
     t = ticks_us()
     if edge == 0:
         last_time = t
-        times[0] = t
+        times[0] = 0
+        edge = 1
         return
-    if ticks_diff(t, last_time) > MAX_GAP_US:
+    lt = last_time
+    last_time = t
+    delta = ticks_diff(t, lt)
+    if delta > MAX_GAP_US:
         done = True
         return
-    last_time = t
     if edge < MAX_EDGES:
-        times[edge] = t
+        times[edge] = delta
         edge += 1
     else:
         done = True
@@ -68,6 +73,8 @@ def capture_ir_code(filename, name="captured"):
     while edge == 0:
         sleep_ms(100)
 
+    print("First edge detected.")
+
     while not done:
         now = ticks_us()
         if last_time != 0 and ticks_diff(now, last_time) > MAX_GAP_US:
@@ -88,18 +95,14 @@ def capture_ir_code(filename, name="captured"):
 
     # add name to codes
     codes = [name]
-
-    # Convert the times array to a list of pulse durations
-    for i in range(1, edge):
-        codes.append(times[i] - times[i-1])
+    codes.extend(times[1:edge])
 
     # Save the captured code to a file
     try:
         with open(filename, 'w') as f:
-            f.write(f"# {name}\n")
             f.write(str(tuple(codes)))
             f.write("\n")
-            print(f"Captured code saved to {filename}")
+            print(f"Captured code saved to {filename} ({edge} edges)")
     except OSError as e:
         print(f"Error writing to file: {e}")
         return False
@@ -121,6 +124,12 @@ def capture_all_codes():
 
     existing_files = [f for f in os.listdir(CAPTURE_DIRECTORY) if f.endswith(".py")]
     num_files = len(existing_files)
+
+    input_power_pin = None
+    if INPUT_POWER_PIN is not None:
+        # Power on the IR receiver
+        input_power_pin = Pin(INPUT_POWER_PIN, Pin.OUT, value=1, hold=False)
+        sleep_ms(100)
 
     # Capture codes until the user interrupts
     try:
@@ -145,8 +154,9 @@ def capture_all_codes():
                 existing_files.append(fname)
     except KeyboardInterrupt:
         print("Capture interrupted by user.")
-
-    print(f"Files in {CAPTURE_DIRECTORY}: {existing_files}")
-
-capture_all_codes()
-reset()
+    finally:
+        input_pin.irq(handler=None)
+        if input_power_pin is not None:
+            input_power_pin.value(0)
+        print("Capture stopped.")
+        print(f"Files in {CAPTURE_DIRECTORY}: {existing_files}")

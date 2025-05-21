@@ -7,14 +7,17 @@ Thanks to Mitch Altman for the TV-B-Gone idea.
 """
 
 import sys
+import os
 import gc
-from esp32 import RMT
-from machine import Pin, deepsleep
+from time import sleep_ms
+from esp32 import RMT, wake_on_ext0, WAKEUP_ANY_HIGH, WAKEUP_ALL_LOW
+from machine import Pin, deepsleep, reset_cause
 from micropython import const
 
 from config import *
-from leds import shine
+from leds import shine, sleep_leds
 from codes import CODES
+from capture import capture_all_codes
 
 
 # Configurable constants
@@ -22,10 +25,12 @@ SCALE_FACTOR = const(3)  # Scale factor for pulse durations
 CARRIER_FREQ = const(38_000)  # Carrier frequency in Hz
 DUTY_CYCLE = const(25)  # Duty cycle as a percentage. 10 to 50% is typical.
 
-IDLE_LEVEL = int(not ACTIVE_LEVEL) # Inverted active level
+IDLE_LEVEL = int(not ACTIVE_LEVEL)  # Inverted active level
 
 
-output_pin = Pin(OUTPUT_PIN, Pin.OUT, value=IDLE_LEVEL, drive=Pin.DRIVE_3)
+output_pin = Pin(OUTPUT_PIN, Pin.OUT, value=IDLE_LEVEL,
+                 drive=Pin.DRIVE_3, hold=False)
+button_pin = Pin(BUTTON_PIN, Pin.IN, BUTTON_PULL, hold=False)
 
 # 1MHz/SCALE_FACTOR channel resolution (80MHz clock)
 rmt = RMT(0, pin=output_pin, clock_div=80 * SCALE_FACTOR, idle_level=IDLE_LEVEL,
@@ -48,6 +53,7 @@ def load_captured_codes():
         print(f"Error loading captured codes: {e}")
         return False
     return True
+
 
 def send_code(code: tuple):
     """Send a single sequence of pulses to the RMT peripheral.
@@ -85,15 +91,6 @@ def send_all_codes(codes: tuple):
     print(f"Total duration: {duration / 1_000_000} s")
 
 
-def main_loop():
-    """Main loop. Waits for a button press to send all codes."""
-    button = Pin(BUTTON_PIN, Pin.IN, BUTTON_PULL)
-
-    while True:
-        if button.value() == BUTTON_ACTIVE_LEVEL:  # Button pressed (active low)
-            send_all_codes(CODES)
-
-
 def check_codes():
     """Check all the pulse durations in CODES to ensure
     that none are > RMT.PULSE_MAX when scaled by SCALE_FACTOR.
@@ -117,20 +114,50 @@ def check_codes():
     return retval
 
 
-def prepare_for_deepsleep():
+def sleep():
     """Prepare the system for deep sleep."""
     print("Preparing for deep sleep...")
     shine(BLACK)
-    deepsleep(0)  # Deep sleep indefinitely
+    if INPUT_POWER_PIN is not None:
+        input_power_pin = Pin(INPUT_POWER_PIN, Pin.OUT, value=0, hold=True)
+    button_pin.init(mode=Pin.IN, pull=BUTTON_PULL, hold=True)
+    sleep_leds()
+    if BUTTON_ACTIVE_LEVEL:
+        wake_on_ext0(button_pin, WAKEUP_ANY_HIGH)
+    else:
+        wake_on_ext0(button_pin, WAKEUP_ALL_LOW)
+    deepsleep()  # Deep sleep indefinitely
 
 
+def wake():
+    """Wake up from deep sleep."""
+    print(f"Waking up cause={reset_cause()}")
+    if INPUT_POWER_PIN is not None:
+        input_power_pin = Pin(INPUT_POWER_PIN, Pin.OUT, value=0, hold=False)
+    shine(GREEN, 500)
+
+
+# Main program
 # Run from boot.py
 try:
-    shine(GREEN, 500)
+    wake()
+    load_captured_codes()
 
     if check_codes():
         print(f"Codes are valid. Ready to output to pin {OUTPUT_PIN}.")
-        main_loop()
+        send_all_codes(CODES)
+
+    if INPUT_PIN is not None:
+        print("Hit Ctrl-C to capture codes")
+        sleep_ms(3_000)
+
+    sleep()
+
+except KeyboardInterrupt:
+    if INPUT_PIN is not None:
+        capture_all_codes()
+    sleep()
+
 except Exception as e:
     print(f"Error: {e} {sys.exc_info()[0]}")
     shine(RED)
