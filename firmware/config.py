@@ -42,9 +42,10 @@ try:
         OUTPUT_PIN = PIN_D0
         INPUT_PIN = PIN_D1
         BUTTON_PIN = PIN_D2
-        INPUT_POWER_PIN = PIN_D3
         BUTTON_PULL = Pin.PULL_UP
+        INPUT_POWER_PIN = PIN_D3
         RGB_LED_PIN = None
         USER_LED_PIN = PIN_USER_LED
+        USER_LED_ACTIVE_LEVEL = 0
 except Exception as e:
     print(f"Exception {e}")

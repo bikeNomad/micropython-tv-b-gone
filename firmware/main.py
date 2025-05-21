@@ -10,7 +10,7 @@ import sys
 import os
 import gc
 from time import sleep_ms
-from esp32 import RMT, wake_on_ext0, WAKEUP_ANY_HIGH, WAKEUP_ALL_LOW
+from esp32 import RMT, wake_on_ext1, WAKEUP_ANY_HIGH, WAKEUP_ALL_LOW
 from machine import Pin, deepsleep, reset_cause
 from micropython import const
 
@@ -28,9 +28,8 @@ DUTY_CYCLE = const(25)  # Duty cycle as a percentage. 10 to 50% is typical.
 IDLE_LEVEL = int(not ACTIVE_LEVEL)  # Inverted active level
 
 
-output_pin = Pin(OUTPUT_PIN, Pin.OUT, value=IDLE_LEVEL,
-                 drive=Pin.DRIVE_3, hold=False)
-button_pin = Pin(BUTTON_PIN, Pin.IN, BUTTON_PULL, hold=False)
+output_pin = Pin(OUTPUT_PIN, Pin.OUT, value=IDLE_LEVEL, drive=Pin.DRIVE_3, hold=False)
+button_pin = Pin(BUTTON_PIN, Pin.IN, BUTTON_PULL)
 
 # 1MHz/SCALE_FACTOR channel resolution (80MHz clock)
 rmt = RMT(0, pin=output_pin, clock_div=80 * SCALE_FACTOR, idle_level=IDLE_LEVEL,
@@ -120,13 +119,12 @@ def sleep():
     shine(BLACK)
     if INPUT_POWER_PIN is not None:
         input_power_pin = Pin(INPUT_POWER_PIN, Pin.OUT, value=0, hold=True)
-    button_pin.init(mode=Pin.IN, pull=BUTTON_PULL, hold=True)
     sleep_leds()
     if BUTTON_ACTIVE_LEVEL:
-        wake_on_ext0(button_pin, WAKEUP_ANY_HIGH)
+        wake_on_ext1([button_pin], WAKEUP_ANY_HIGH)
     else:
-        wake_on_ext0(button_pin, WAKEUP_ALL_LOW)
-    deepsleep()  # Deep sleep indefinitely
+        wake_on_ext1([button_pin], WAKEUP_ALL_LOW)
+    deepsleep()  # Deep sleep until button wakes
 
 
 def wake():

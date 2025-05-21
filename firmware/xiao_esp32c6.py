@@ -22,7 +22,6 @@ PIN_BOOT = 9 # Boot switch, active low (pulled up by HW)
 PIN_RF_SWITCH = 14 # pull high for UFL output
 PIN_RF_SWITCH_POWER = 3 # pull low to turn on RF switch
 PIN_USER_LED = 15 # pull low to turn on LED
-USER_LED_ACTIVE_LEVEL = 0
 
 RF_SWITCH_PIN = Pin(PIN_RF_SWITCH, Pin.IN) # internal (pulled low by default)
 RF_SWITCH_POWER_PIN = Pin(PIN_RF_SWITCH_POWER, Pin.IN) # off (pulled high)

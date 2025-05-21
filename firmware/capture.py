@@ -12,7 +12,7 @@ MAX_GAP_US = const(100_000)  # 100ms gap to end capture
 MAX_EDGES = const(100)  # Maximum number of edges to capture
 MIN_EDGES = const(4)
 
-input_pin = Pin(INPUT_PIN, Pin.IN, hold=False)
+input_pin = Pin(INPUT_PIN, Pin.IN)
 times = None
 edge = 0  # Current edge number, index into times
 last_time = 0   # Last edge time
@@ -128,7 +128,7 @@ def capture_all_codes():
     input_power_pin = None
     if INPUT_POWER_PIN is not None:
         # Power on the IR receiver
-        input_power_pin = Pin(INPUT_POWER_PIN, Pin.OUT, value=1, hold=False)
+        input_power_pin = Pin(INPUT_POWER_PIN, Pin.OUT, value=1)
         sleep_ms(100)
 
     # Capture codes until the user interrupts
@@ -154,6 +154,7 @@ def capture_all_codes():
                 existing_files.append(fname)
     except KeyboardInterrupt:
         print("Capture interrupted by user.")
+        sleep_ms(3000)
     finally:
         input_pin.irq(handler=None)
         if input_power_pin is not None:
