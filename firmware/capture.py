@@ -9,7 +9,7 @@ from micropython import const
 from config import INPUT_PIN, INPUT_ACTIVE_LEVEL, CAPTURE_DIRECTORY, INPUT_POWER_PIN
 
 MAX_GAP_US = const(100_000)  # 100ms gap to end capture
-MAX_EDGES = const(100)  # Maximum number of edges to capture
+MAX_EDGES = const(300)  # Maximum number of edges to capture
 MIN_EDGES = const(4)
 
 input_pin = Pin(INPUT_PIN, Pin.IN)
