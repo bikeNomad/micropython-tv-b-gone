@@ -15,7 +15,7 @@ I asked Google Gemini to tell me the top 10 brands of modern TVs and collected t
 Saleae's automation API and Python helped me automate the collection process.
 Then I had the Cody AI write a Python script that could read the CSV files produced by the Saleae logic analyzer and convert them into a format that could be used by the ESP32. Along the way I also had it identify the IR protocols, and also produce hex representations of the codes for recognized protocols, to allow me to eliminate duplicate codes.
 ## TV Brands Supported
-The following brands are supported:
+The following brands are supported (30 separate codes):
   - Samsung
   - LG
   - TCL
@@ -26,6 +26,8 @@ The following brands are supported:
   - Philips
   - Sharp
   - Toshiba
+  - Hitachi
+  - ONN
 ## Installation and usage
 Copy all the files from the `firmware` directory to your ESP32's root directory.
 After a reset, the ESP32 will send all the codes and will go into deep sleep until the button is pressed.
