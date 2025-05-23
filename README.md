@@ -28,6 +28,7 @@ The following brands are supported (30 separate codes):
   - Toshiba
   - Hitachi
   - ONN
+  - Mitsubishi
 ## Installation and usage
 Copy all the files from the `firmware` directory to your ESP32's root directory.
 After a reset, the ESP32 will send all the codes and will go into deep sleep until the button is pressed.
@@ -67,7 +68,9 @@ You can also edit the RGB LED colors in `firmware/config.py` if you want differe
 You will need a 940nm IR LED and a simple one-transistor driver circuit to drive the LED.
 See Peter Hinch's explanation [here](https://github.com/peterhinch/micropython_ir/blob/master/TRANSMITTER.md).
 Although Peter's examples show an NPN BJT transistor, 
-I used a BS170 N-channel MOSFET transistor because that's what I had on hand, but any logic-level N-channel MOSFET should work.
+I used a VN3205 N-channel MOSFET transistor because I had one and it has a very low on resistance (Rds(on) rating of 0.4 ohm),
+but any logic-level (Vgs(th) < 3V) N-channel MOSFET should work.
+The higher the Rds(on) rating, the lower the IR output will be.
 The IR LED's cathode is connected to the drain of the transistor,
 and its anode is connected in series with a current limiting resistor whose other end is connected to your highest-voltage power rail (I used +5V on the dev board, and VBAT on the portable device).
 The MOSFET's source is connected to ground, and its gate is connected to the GPIO pin used for the IR LED.
@@ -79,6 +82,8 @@ Vled is the forward voltage drop of the IR LED (typically around 1.2-1.5V),
 Vsat is the saturation voltage of the transistor (typically around 0.1V for an NPN), and Iled is the desired current through the IR LED.
 If you're using a MOSFET, Vsat would be Iled*Rds(on), where Rds(on) is the on-resistance of the MOSFET.
 I used a high-power IR LED with a maximum pulse current rating of 200mA (TSAL6200), so I used a 22 ohm resistor to produce 100mA current pulses at 3.6V.
+
+3.6V (battery) - 1.2V (LED) - (0.1 A * 0.4 ohm)) / 0.1 A = 23.6 ohm.
 
 ![Image](images/ir_output.png)
 ## Receiver Circuit Design

@@ -1546,8 +1546,9 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Transistor_FET:BS170"
+		(symbol "Transistor_FET:Q_NMOS_SGD"
 			(pin_names
+				(offset 0)
 				(hide yes)
 			)
 			(exclude_from_sim no)
@@ -1562,7 +1563,7 @@
 					(justify left)
 				)
 			)
-			(property "Value" "BS170"
+			(property "Value" "Q_NMOS_SGD"
 				(at 5.08 0 0)
 				(effects
 					(font
@@ -1571,28 +1572,16 @@
 					(justify left)
 				)
 			)
-			(property "Footprint" "Package_TO_SOT_THT:TO-92_Inline"
-				(at 5.08 -1.905 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-						(italic yes)
-					)
-					(justify left)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "https://www.onsemi.com/pub/Collateral/BS170-D.PDF"
-				(at 5.08 -3.81 0)
+			(property "Footprint" ""
+				(at 5.08 2.54 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify left)
 					(hide yes)
 				)
 			)
-			(property "Description" "0.5A Id, 60V Vds, N-Channel MOSFET, TO-92"
+			(property "Datasheet" "~"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1601,7 +1590,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_keywords" "N-Channel MOSFET"
+			(property "Description" "N-MOSFET transistor, source/gate/drain"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1610,7 +1599,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "TO?92*"
+			(property "ki_keywords" "transistor NMOS N-MOS N-MOSFET"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1619,7 +1608,7 @@
 					(hide yes)
 				)
 			)
-			(symbol "BS170_0_1"
+			(symbol "Q_NMOS_SGD_0_1"
 				(polyline
 					(pts
 						(xy 0.254 1.905) (xy 0.254 -1.905)
@@ -1763,7 +1752,7 @@
 				)
 				(polyline
 					(pts
-						(xy 2.794 0.508) (xy 2.921 0.381) (xy 3.683 0.381) (xy 3.81 0.254)
+						(xy 2.921 0.381) (xy 3.683 0.381)
 					)
 					(stroke
 						(width 0)
@@ -1786,10 +1775,10 @@
 					)
 				)
 			)
-			(symbol "BS170_1_1"
+			(symbol "Q_NMOS_SGD_1_1"
 				(pin input line
 					(at -5.08 0 0)
-					(length 2.54)
+					(length 5.08)
 					(name "G"
 						(effects
 							(font
@@ -1815,7 +1804,7 @@
 							)
 						)
 					)
-					(number "1"
+					(number "3"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1833,7 +1822,7 @@
 							)
 						)
 					)
-					(number "3"
+					(number "1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -4578,82 +4567,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Transistor_FET:BS170")
-		(at 101.6 177.8 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "b45b3889-ef47-43d6-b119-c00eba4efb0d")
-		(property "Reference" "Q1"
-			(at 107.95 176.5299 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "BS170"
-			(at 107.95 179.0699 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Package_TO_SOT_THT:TO-92_Inline"
-			(at 106.68 179.705 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://www.onsemi.com/pub/Collateral/BS170-D.PDF"
-			(at 106.68 181.61 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Description" "0.5A Id, 60V Vds, N-Channel MOSFET, TO-92"
-			(at 101.6 177.8 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "46f705d1-5279-4bcb-9906-d7f41d3f806c")
-		)
-		(pin "1"
-			(uuid "04de2b93-daa6-473f-8db6-841929166373")
-		)
-		(pin "3"
-			(uuid "6153e8e6-2a2d-480d-8e98-7b205d60c52c")
-		)
-		(instances
-			(project ""
-				(path "/58dc933f-1062-4738-8cb1-787931f6c816"
-					(reference "Q1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R")
 		(at 104.14 152.4 0)
 		(unit 1)
@@ -5055,6 +4968,79 @@
 			(project ""
 				(path "/58dc933f-1062-4738-8cb1-787931f6c816"
 					(reference "U2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Transistor_FET:Q_NMOS_SGD")
+		(at 101.6 177.8 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "efe96e3e-86b0-44cf-9ea4-55951442d58a")
+		(property "Reference" "Q1"
+			(at 107.95 176.5299 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "VN3205"
+			(at 107.95 179.0699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 106.68 175.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 101.6 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "N-MOSFET transistor, source/gate/drain"
+			(at 101.6 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "ba1a6f85-9388-4aa2-adb7-ea698f44cc1e")
+		)
+		(pin "3"
+			(uuid "63b91751-ff02-47d1-9469-28f72bff0b63")
+		)
+		(pin "1"
+			(uuid "23493263-61d1-4b0c-b928-e947eace8dab")
+		)
+		(instances
+			(project ""
+				(path "/58dc933f-1062-4738-8cb1-787931f6c816"
+					(reference "Q1")
 					(unit 1)
 				)
 			)
