@@ -29,7 +29,7 @@ IDLE_LEVEL = int(not ACTIVE_LEVEL)  # Inverted active level
 
 
 output_pin = Pin(OUTPUT_PIN, Pin.OUT, value=IDLE_LEVEL, drive=Pin.DRIVE_3, hold=False)
-button_pin = Pin(BUTTON_PIN, Pin.IN, BUTTON_PULL)
+button_pin = Pin(BUTTON_PIN, Pin.IN, BUTTON_PULL, hold=False)
 
 # 1MHz/SCALE_FACTOR channel resolution (80MHz clock)
 rmt = RMT(0, pin=output_pin, clock_div=80 * SCALE_FACTOR, idle_level=IDLE_LEVEL,
@@ -120,6 +120,7 @@ def sleep():
     if INPUT_POWER_PIN is not None:
         input_power_pin = Pin(INPUT_POWER_PIN, Pin.OUT, value=0, hold=True)
     sleep_leds()
+    button_pin.init(Pin.IN, BUTTON_PULL, hold=True)
     if BUTTON_ACTIVE_LEVEL:
         wake_on_ext1([button_pin], WAKEUP_ANY_HIGH)
     else:
